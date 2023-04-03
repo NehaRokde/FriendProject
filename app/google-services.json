@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "214979083912",
+    "project_id": "friendstor-91e28",
+    "storage_bucket": "friendstor-91e28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214979083912:android:c6d80c160f417e95db693d",
+        "android_client_info": {
+          "package_name": "com.example.friendstor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214979083912-h8r3eijtdc8cv61e8vcdsbj0ieljlrv7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.friendstor",
+            "certificate_hash": "2d59b59a8097a25381aca0060f99171caca9d2f3"
+          }
+        },
+        {
+          "client_id": "214979083912-n1fvbeitij7fe21hkviml99f3g2ece39.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfqq0QdDUyx9aD-7RtHKeKES7G8zDi1XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214979083912-n1fvbeitij7fe21hkviml99f3g2ece39.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
