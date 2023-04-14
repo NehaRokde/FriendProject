@@ -20,12 +20,14 @@ import com.example.friendstor.R;
 import com.example.friendstor.feature.homepage.MainActivity;
 import com.example.friendstor.model.auth.AuthResponse;
 import com.example.friendstor.utils.ViewModelFactory;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -66,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 signIn();
             }
         });
@@ -88,6 +91,11 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
+                e.printStackTrace();
+                Log.e("Log", e.getMessage());
+                Log.e("Log", e.getStatusMessage());
+                Log.e("Log", e.getStatus()+"");
+                Log.e("Log", e.getStatusCode()+"");
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
@@ -165,10 +173,9 @@ public class LoginActivity extends AppCompatActivity {
     private void createRequest() {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .build();
-
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);

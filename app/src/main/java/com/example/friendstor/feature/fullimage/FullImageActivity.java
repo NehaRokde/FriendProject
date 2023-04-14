@@ -2,8 +2,10 @@ package com.example.friendstor.feature.fullimage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.friendstor.R;
@@ -20,12 +22,18 @@ public class FullImageActivity extends AppCompatActivity {
         String image = getIntent().getStringExtra("imageUrl");
         Uri imageUri = Uri.parse(image);
         PhotoView photoView = findViewById(R.id.photoview);
+
         if (imageUri.getAuthority() == null) {
-            image = ApiClient.BASE_URL + image;
+            if(image.contains("../")){
+                image = ApiClient.BASE_URL + image;
+                Glide.with(this).load(image).into(photoView);
+            }else{
+                Glide.with(this).load(Integer.parseInt(image)).into(photoView);
+            }
+
+        }else{
+            Glide.with(this).load(image).into(photoView);
         }
-
-        Glide.with(this).load(image).into(photoView);
-
     }
 
 }

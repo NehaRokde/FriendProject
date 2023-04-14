@@ -106,7 +106,7 @@ public class PostUploadActivity extends AppCompatActivity {
                 String status = textInputEditText.getText().toString();
                 String userId = FirebaseAuth.getInstance().getUid();
 
-                if (status.trim().length() > 0) {
+                if (status.trim().length() > 0 || isImageSelected) {
 
                     progressDialog.show();
 
@@ -138,8 +138,7 @@ public class PostUploadActivity extends AppCompatActivity {
                             if(generalResponse.getStatus() == 200){
                                 Intent intent =  new Intent(PostUploadActivity.this, MainActivity.class);
                                 startActivity(intent);
-
-
+//                                onBackPressed();
                             }
                         }
                     });

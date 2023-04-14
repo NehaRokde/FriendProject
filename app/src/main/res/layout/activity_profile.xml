@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:collapsedTitleTextAppearance="@style/collapsedAppBar"
-            app:expandedTitleMarginBottom="20dp"
             app:contentScrim="@color/colorPrimary"
+            app:expandedTitleMarginBottom="20dp"
             app:expandedTitleMarginEnd="0dp"
             app:expandedTitleMarginStart="16dp"
             app:expandedTitleTextAppearance="@style/expandedAppBar"
@@ -87,12 +87,19 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp" />
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <ProgressBar
         android:id="@+id/progressbar"

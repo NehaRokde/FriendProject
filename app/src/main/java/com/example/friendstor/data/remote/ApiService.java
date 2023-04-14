@@ -1,10 +1,15 @@
 package com.example.friendstor.data.remote;
 
 import com.example.friendstor.feature.auth.LoginActivity;
+import com.example.friendstor.feature.profile.ProfileActivity;
 import com.example.friendstor.model.GeneralResponse;
 import com.example.friendstor.model.auth.AuthResponse;
+import com.example.friendstor.model.friend.FriendResponse;
+import com.example.friendstor.model.post.PostResponse;
 import com.example.friendstor.model.profile.ProfileResponse;
+import com.example.friendstor.model.reaction.ReactResponse;
 import com.example.friendstor.model.search.SearchResponse;
+import com.example.friendstor.utils.Util;
 
 import java.util.Map;
 
@@ -13,12 +18,16 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
 public interface ApiService {
 
     @POST("login")
     Call<AuthResponse> login(@Body LoginActivity.UserInfo userInfo);
+
+    @POST("performReaction")
+    Call<ReactResponse> performReaction(@Body Util.PerformReaction performReaction);
 
     @POST("uploadpost")
     Call<GeneralResponse> uploadPost(@Body MultipartBody body);
@@ -31,4 +40,16 @@ public interface ApiService {
 
     @GET("search")
     Call<SearchResponse> search(@QueryMap Map<String, String> params);
+
+    @POST("performaction")
+    Call<GeneralResponse> performAction(@Body ProfileActivity.PerformAction body);
+
+    @GET("loadfriends")
+    Call<FriendResponse> loadFriends(@Query("uid") String uid);
+
+    @GET("getnewsfeed")
+    Call<PostResponse> getNewsFeed(@QueryMap Map<String, String> params);
+
+    @GET("loadProfilePosts")
+    Call<PostResponse> loadProfilePosts(@QueryMap Map<String, String> params);
 }

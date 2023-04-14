@@ -6,11 +6,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.friendstor.data.remote.ApiError;
 import com.example.friendstor.data.remote.ApiService;
 import com.example.friendstor.feature.auth.LoginActivity;
+import com.example.friendstor.feature.profile.ProfileActivity;
 import com.example.friendstor.model.GeneralResponse;
 import com.example.friendstor.model.auth.AuthResponse;
+import com.example.friendstor.model.friend.FriendResponse;
+import com.example.friendstor.model.post.PostResponse;
 import com.example.friendstor.model.profile.ProfileResponse;
 import com.example.friendstor.model.search.SearchResponse;
-import com.google.android.gms.common.api.Api;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -21,18 +23,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Repository {
+public class UserRepository {
 
-    private static Repository instance = null;
+    private static UserRepository instance = null;
     private final ApiService apiService;
 
-    private Repository(ApiService apiService) {
+    private UserRepository(ApiService apiService) {
         this.apiService = apiService;
     }
 
-    public static Repository getRepository(ApiService apiService) {
+    public static UserRepository getRepository(ApiService apiService) {
         if (instance == null) {
-            instance = new Repository(apiService);
+            instance = new UserRepository(apiService);
         }
         return instance;
     }
@@ -102,47 +104,6 @@ public class Repository {
         return  userInfo;
     }
 
-    public LiveData<GeneralResponse> uploadPost(MultipartBody multipartBody, Boolean isCoverOrProfileImage){
-        MutableLiveData<GeneralResponse> postUpload = new MutableLiveData<>();
-        Call<GeneralResponse> call = null;
-        if(isCoverOrProfileImage){
-            call = apiService.uploadImage(multipartBody);
-        }else {
-            call = apiService.uploadPost(multipartBody);
-        }
-
-        call.enqueue(new Callback<GeneralResponse>() {
-            @Override
-            public void onResponse(Call<GeneralResponse> call, Response<GeneralResponse> response) {
-                if(response.isSuccessful()){
-                    postUpload.postValue(response.body());
-                }else{
-
-                    Gson gson = new Gson();
-                    GeneralResponse generalResponse = null;
-                    try {
-                        generalResponse = gson.fromJson(response.errorBody().string(), GeneralResponse.class);
-                    } catch (IOException e) {
-                        ApiError.ErrorMessage errorMessage = ApiError.getErrorFromException(e);
-                        generalResponse = new GeneralResponse(errorMessage.message, errorMessage.status);
-                    }
-                    postUpload.postValue(generalResponse);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GeneralResponse> call, Throwable t) {
-                ApiError.ErrorMessage errorMessage = ApiError.getErrorFromThrowable(t);
-                GeneralResponse authResponse = new GeneralResponse(errorMessage.message, errorMessage.status);
-                postUpload.postValue(authResponse);
-            }
-        });
-
-
-        return postUpload;
-
-
-    }
 
     public LiveData<SearchResponse> search(Map<String,String> params){
         MutableLiveData<SearchResponse> searchInfo = new MutableLiveData<>();
@@ -175,5 +136,72 @@ public class Repository {
         });
         return  searchInfo;
     }
+
+
+    public LiveData<GeneralResponse> performAction(ProfileActivity.PerformAction performAction){
+        MutableLiveData<GeneralResponse> searchInfo = new MutableLiveData<>();
+        Call<GeneralResponse> call = apiService.performAction(performAction);
+        call.enqueue(new Callback<GeneralResponse>() {
+            @Override
+            public void onResponse(Call<GeneralResponse> call, Response<GeneralResponse> response) {
+
+                if(response.isSuccessful()){
+                    searchInfo.postValue(response.body());
+                }else{
+                    Gson gson = new Gson();
+                    GeneralResponse generalResponse = null;
+                    try {
+                        generalResponse = gson.fromJson(response.errorBody().string(), GeneralResponse.class);
+                    } catch (IOException e) {
+                        ApiError.ErrorMessage errorMessage = ApiError.getErrorFromException(e);
+                        generalResponse = new GeneralResponse(errorMessage.message, errorMessage.status);
+                    }
+                    searchInfo.postValue(generalResponse);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GeneralResponse> call, Throwable t) {
+                ApiError.ErrorMessage errorMessage = ApiError.getErrorFromThrowable(t);
+                GeneralResponse authResponse = new GeneralResponse(errorMessage.message, errorMessage.status);
+                searchInfo.postValue(authResponse);
+            }
+        });
+        return  searchInfo;
+    }
+
+    public MutableLiveData<FriendResponse> loadFriends(String uid){
+        MutableLiveData<FriendResponse> friendInfo = new MutableLiveData<>();
+        Call<FriendResponse> call = apiService.loadFriends(uid);
+        call.enqueue(new Callback<FriendResponse>() {
+            @Override
+            public void onResponse(Call<FriendResponse> call, Response<FriendResponse> response) {
+
+                if(response.isSuccessful()){
+                    friendInfo.postValue(response.body());
+                }else{
+                    Gson gson = new Gson();
+                    FriendResponse friendResponse = null;
+                    try {
+                        friendResponse = gson.fromJson(response.errorBody().string(), FriendResponse.class);
+                    } catch (IOException e) {
+                        ApiError.ErrorMessage errorMessage = ApiError.getErrorFromException(e);
+                        friendResponse = new FriendResponse(errorMessage.message, errorMessage.status);
+                    }
+                    friendInfo.postValue(friendResponse);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FriendResponse> call, Throwable t) {
+                ApiError.ErrorMessage errorMessage = ApiError.getErrorFromThrowable(t);
+                FriendResponse authResponse = new FriendResponse(errorMessage.message, errorMessage.status);
+                friendInfo.postValue(authResponse);
+            }
+        });
+        return  friendInfo;
+    }
+
+
 
 }
