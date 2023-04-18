@@ -60,7 +60,44 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             holder.title.setText("Unknown");
         }
 
+        if (notificationsItem.getType().equals("request-accepted") ||
+                notificationsItem.getType().equals("friend-request")) {
 
+            holder.body.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(new Intent(context, ProfileActivity.class)
+                            .putExtra("uid", notificationsItem.getNotificationFrom()));
+                }
+            });
+        } else {
+            if (notificationsItem.getPost() != null && !notificationsItem.getPost().isEmpty()) {
+                holder.body.setVisibility(View.VISIBLE);
+                holder.body.setText(notificationsItem.getPost());
+            }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(new Intent(context, PostDetailActivity.class)
+                            .putExtra("shouldLoadFromApi", true)
+                            .putExtra("postId", notificationsItem.getPostId()));
+                }
+            });
+        }
+
+        String profileImage = notificationsItem.getProfileUrl();
+        if (Uri.parse(profileImage).getAuthority() == null) {
+            profileImage = ApiClient.BASE_URL + profileImage;
+        }
+        Glide.with(context).load(profileImage)
+                .placeholder(R.drawable.default_profile_placeholder).into(holder.profileImage);
+
+        try {
+            holder.date.setText(AgoDateParse.getTimeAgo(notificationsItem.getNotificationTime()));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
