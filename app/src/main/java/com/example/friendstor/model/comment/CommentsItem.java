@@ -41,6 +41,24 @@ public class CommentsItem{
 	@SerializedName("cid")
 	private int cid;
 
+	@SerializedName("totalCommentReplies")
+	private int totalCommentReplies;
+
+	public CommentsItem(String profileUrl, String commentDate, String name, String comment) {
+		this.profileUrl = profileUrl;
+		this.commentDate = commentDate;
+		this.name = name;
+		this.comment = comment;
+	}
+
+	public int getTotalCommentReplies() {
+		return totalCommentReplies;
+	}
+
+	public void setTotalCommentReplies(int totalCommentReplies) {
+		this.totalCommentReplies = totalCommentReplies;
+	}
+
 	public void setProfileUrl(String profileUrl){
 		this.profileUrl = profileUrl;
 	}

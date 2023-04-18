@@ -88,6 +88,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                 }
             }
         });
+        fetchNews();
 
     }
 
@@ -97,12 +98,6 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
         int noOfItems = postAdapter.getItemCount();
         return (position >= noOfItems - 1);
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        fetchNews();
     }
 
     private void fetchNews() {
@@ -121,7 +116,7 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                 ((MainActivity) getActivity()).hideProgressBar();
 
                 if (postResponse.getStatus() == 200) {
-                    if(swipeRefreshLayout.isRefreshing()){
+                    if (swipeRefreshLayout.isRefreshing()) {
                         postsItems.clear();
                         postAdapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
@@ -135,12 +130,12 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
                         postAdapter.notifyItemRangeInserted(postsItems.size(), postResponse.getPosts().size());
                     }
 
-                    if(postResponse.getPosts().size() ==0){
+                    if (postResponse.getPosts().size() == 0) {
                         offset -= limit;
                     }
                     isFirstLoading = false;
                 } else {
-                    if(swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
+                    if (swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(context, postResponse.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -148,9 +143,10 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     }
 
+
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        super.onDestroyView();
         offset = 0;
         postsItems.clear();
         isFirstLoading = true;
@@ -168,19 +164,24 @@ public class NewsFeedFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         viewModel.performReaction(new Util.PerformReaction(
                 uid,
-                postId+"",
+                postId + "",
                 postOwnerId,
                 previousReactionType,
                 newReactionType
         )).observe(this, new Observer<ReactResponse>() {
             @Override
             public void onChanged(ReactResponse reactResponse) {
-                if(reactResponse.getStatus() == 200){
+                if (reactResponse.getStatus() == 200) {
                     postAdapter.updatePostAfterReaction(adpaterPosition, reactResponse.getReaction());
-                }else {
+                } else {
                     Toast.makeText(context, reactResponse.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    public void onCommentAdded(int adapterPosition) {
+
+        postAdapter.increasePostCommentCount(adapterPosition);
     }
 }

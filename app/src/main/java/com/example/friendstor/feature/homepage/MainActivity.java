@@ -21,11 +21,13 @@ import com.example.friendstor.feature.homepage.friends.FriendRequestAdapter;
 import com.example.friendstor.feature.homepage.friends.FriendsFragment;
 import com.example.friendstor.feature.homepage.newsfeed.MainViewModel;
 import com.example.friendstor.feature.homepage.newsfeed.NewsFeedFragment;
+import com.example.friendstor.feature.homepage.notifications.NotificationFragment;
 import com.example.friendstor.feature.postupload.PostUploadActivity;
 import com.example.friendstor.feature.profile.ProfileActivity;
 import com.example.friendstor.feature.search.SearchActivity;
 import com.example.friendstor.model.GeneralResponse;
 import com.example.friendstor.model.friend.FriendResponse;
+import com.example.friendstor.utils.Util;
 import com.example.friendstor.utils.ViewModelFactory;
 import com.example.friendstor.utils.adapter.PostAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,7 +37,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements FriendRequestAdapter.IPerformAction,
-        PostAdapter.IUpdateUserReaction {
+        PostAdapter.IUpdateUserReaction, Util.IOCommentAdded {
 
     private BottomNavigationView bottomNavigationView;
     private FriendsFragment friendsFragment;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements FriendRequestAdap
     private ProgressBar progressBar;
 
     private MainViewModel viewModel;
+
+    private NotificationFragment notificationFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,16 @@ public class MainActivity extends AppCompatActivity implements FriendRequestAdap
         bottomNavigationView = findViewById(R.id.navigation);
         friendsFragment = new FriendsFragment();
         newsFeedFragment = new NewsFeedFragment();
-        setFragment(newsFeedFragment);
+        notificationFragment = new NotificationFragment();
+
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("isFromNotification")) {
+            setFragment(notificationFragment);
+            bottomNavigationView.getMenu().findItem(R.id.notification).setChecked(true);
+        } else {
+            setFragment(newsFeedFragment);
+        }
+
+
         setBottomNavigationView();
 
 
@@ -96,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements FriendRequestAdap
 
                     case R.id.friendFragment:
                         setFragment(friendsFragment);
+                        return true;
+
+                    case R.id.notification:
+                        setFragment(notificationFragment);
                         return true;
 
                     case R.id.profileActivity:
@@ -144,11 +161,16 @@ public class MainActivity extends AppCompatActivity implements FriendRequestAdap
                 }
             }
         });
-        Toast.makeText(MainActivity.this," generalResponse.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, " generalResponse.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void updateUserReaction(String uid, int postId, String postOwnerId, String previousReactionType, String newReactionType, int adpaterPosition) {
-        newsFeedFragment.updateUserReaction(uid, postId, postOwnerId, previousReactionType,newReactionType,adpaterPosition);
+        newsFeedFragment.updateUserReaction(uid, postId, postOwnerId, previousReactionType, newReactionType, adpaterPosition);
+    }
+
+    @Override
+    public void onCommandAdded(int adapterPosition) {
+        newsFeedFragment.onCommentAdded(adapterPosition);
     }
 }

@@ -4,7 +4,9 @@ import com.example.friendstor.feature.auth.LoginActivity;
 import com.example.friendstor.feature.profile.ProfileActivity;
 import com.example.friendstor.model.GeneralResponse;
 import com.example.friendstor.model.auth.AuthResponse;
+import com.example.friendstor.model.comment.CommentResponse;
 import com.example.friendstor.model.friend.FriendResponse;
+import com.example.friendstor.model.notification.NotificationResponse;
 import com.example.friendstor.model.post.PostResponse;
 import com.example.friendstor.model.profile.ProfileResponse;
 import com.example.friendstor.model.reaction.ReactResponse;
@@ -29,6 +31,9 @@ public interface ApiService {
     @POST("performReaction")
     Call<ReactResponse> performReaction(@Body Util.PerformReaction performReaction);
 
+    @POST("postcomment")
+    Call<CommentResponse> postComment(@Body Util.PostComment postComment);
+
     @POST("uploadpost")
     Call<GeneralResponse> uploadPost(@Body MultipartBody body);
 
@@ -38,6 +43,9 @@ public interface ApiService {
     @GET("loadprofileinfo")
     Call<ProfileResponse> fetchProfileInfo(@QueryMap Map<String, String> params);
 
+    @GET("postdetail")
+    Call<PostResponse> postDetail(@QueryMap Map<String, String> params);
+
     @GET("search")
     Call<SearchResponse> search(@QueryMap Map<String, String> params);
 
@@ -46,6 +54,15 @@ public interface ApiService {
 
     @GET("loadfriends")
     Call<FriendResponse> loadFriends(@Query("uid") String uid);
+
+    @GET("getnotification")
+    Call<NotificationResponse> getNotification(@Query("uid") String uid);
+
+    @GET("getpostcomments")
+    Call<CommentResponse> getPostComments(@Query("postId") String postId, @Query("postUserId") String postUserId);
+
+    @GET("getcommentreplies")
+    Call<CommentResponse> getCommentReplies(@Query("postId") String postId, @Query("commentId") String commentId);
 
     @GET("getnewsfeed")
     Call<PostResponse> getNewsFeed(@QueryMap Map<String, String> params);

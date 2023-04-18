@@ -1,5 +1,7 @@
 package com.example.friendstor.utils;
 
+import com.example.friendstor.model.comment.CommentsItem;
+
 public class Util {
 
     public static class PerformReaction{
@@ -26,5 +28,13 @@ public class Util {
             this.commentUserId = commentUserId;
             this.parentId = parentId;
         }
+    }
+
+    public interface IOCommentAdded{
+        void onCommandAdded(int adapterPosition);
+    }
+
+    public interface IOnCommentRepliesAdded{
+        void onCommentRepliesAdded(int adapterPosition, CommentsItem commentsItem);
     }
 }

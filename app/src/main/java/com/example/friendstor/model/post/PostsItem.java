@@ -160,6 +160,17 @@ public class PostsItem {
     @SerializedName("hahaCount")
     private int hahaCount;
 
+    @SerializedName("commentCount")
+    private int commentCount;
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
     public void setLoveCount(int loveCount) {
         this.loveCount = loveCount;
     }

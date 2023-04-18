@@ -18,4 +18,5 @@
         <item>Public</item>
 
     </string-array>
+    <string name="title_activity_post_detail">PostDetailActivity</string>
 </resources>

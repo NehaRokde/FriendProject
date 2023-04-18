@@ -12,9 +12,16 @@
         android:title="Friends" />
 
     <item
+        android:id="@+id/notification"
+        android:icon="@drawable/ic_notification"
+        android:title="Notification" />
+
+    <item
         android:id="@+id/profileActivity"
         android:icon="@drawable/icon_person"
         android:title="Profile" />
+
+
 
 
 </menu>

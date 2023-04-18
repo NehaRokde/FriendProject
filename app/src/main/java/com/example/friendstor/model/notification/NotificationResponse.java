@@ -1,30 +1,22 @@
-package com.example.friendstor.model.comment;
+package com.example.friendstor.model.notification;
 
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
-public class CommentResponse{
-
-	@SerializedName("comments")
-	private List<CommentsItem> comments;
+public class NotificationResponse{
 
 	@SerializedName("message")
 	private String message;
 
+	@SerializedName("notifications")
+	private List<NotificationsItem> notifications;
+
 	@SerializedName("status")
 	private int status;
 
-	public CommentResponse(String message, int status) {
+	public NotificationResponse(String message, int status) {
 		this.message = message;
 		this.status = status;
-	}
-
-	public void setComments(List<CommentsItem> comments){
-		this.comments = comments;
-	}
-
-	public List<CommentsItem> getComments(){
-		return comments;
 	}
 
 	public void setMessage(String message){
@@ -33,6 +25,14 @@ public class CommentResponse{
 
 	public String getMessage(){
 		return message;
+	}
+
+	public void setNotifications(List<NotificationsItem> notifications){
+		this.notifications = notifications;
+	}
+
+	public List<NotificationsItem> getNotifications(){
+		return notifications;
 	}
 
 	public void setStatus(int status){

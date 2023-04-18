@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -31,12 +32,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment implements Util.IOnCommentRepliesAdded {
+public class CommentRepliesBottomSheet extends BottomSheetDialogFragment {
 
     Context context;
     private TextView commentsCounterTxt;
@@ -48,21 +47,24 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
 
     private String postId, postuserId, commentOn, commentUserId, parentId;
     private boolean shouldOpenKeyboard = false;
-    private int commentCounter = 0, postAdapterPosition = 0;
+    private int commentCounter = 0, postAdapterPosition = 0, adapterPosition = 0;
 
     private Util.IOCommentAdded ioCommentAdded;
 
     private CommentAdapter commentAdapter;
     private List<CommentsItem> commentsItems = new ArrayList<>();
 
-    private Util.IOnCommentRepliesAdded iOnCommentRepliesAdded;
+    Util.IOnCommentRepliesAdded iOnCommentRepliesAdded;
+
+    public CommentRepliesBottomSheet(Util.IOnCommentRepliesAdded iOnCommentRepliesAdded) {
+        this.iOnCommentRepliesAdded = iOnCommentRepliesAdded;
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         this.ioCommentAdded = (Util.IOCommentAdded) context;
-        this.iOnCommentRepliesAdded = PostCommentRepliesBottomSheet.this;
     }
 
     @Override
@@ -78,6 +80,7 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
         commentCounter = getArguments().getInt("commentCounter");
         shouldOpenKeyboard = getArguments().getBoolean("shouldOpenKeyboard");
         postAdapterPosition = getArguments().getInt("postAdapterPosition");
+        adapterPosition = getArguments().getInt("adapterPosition");
 
     }
 
@@ -96,22 +99,31 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        getPostComments();
-
-        if (commentCounter == 0 || commentCounter == 1) {
-            commentsCounterTxt.setText(commentCounter + " comment");
-        } else {
-            commentsCounterTxt.setText(commentCounter + " comments");
+        if(shouldOpenKeyboard){
+            commentEditText.requestFocus();
+            InputMethodManager im = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.showSoftInput(commentEditText, InputMethodManager.SHOW_IMPLICIT);
         }
+
+        getCommentReplies();
+
+        commentsCounterTxt.setText("Replies");
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
                 BottomSheetDialog dialog1 = (BottomSheetDialog) dialog;
                 FrameLayout bottomSheet = dialog1.findViewById(com.google.android.material.R.id.design_bottom_sheet);
                 bottomSheet.setBackgroundColor(Color.TRANSPARENT);
-                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+                if(shouldOpenKeyboard){
+                    BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+                }else {
+                    BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
             }
         });
+
 
         commentSendWrapper.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,19 +144,22 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
                             parentId)).observe(getActivity(), new Observer<CommentResponse>() {
                         @Override
                         public void onChanged(CommentResponse commentResponse) {
+                            Toast.makeText(context, commentResponse.getMessage(), Toast.LENGTH_SHORT).show();
                             if (commentResponse.getStatus() == 200) {
-                                commentCounter++;
-                                if (commentCounter == 1) {
-                                    commentsCounterTxt.setText(commentCounter + " comment");
-                                } else {
-                                    commentsCounterTxt.setText(commentCounter + " comments");
-                                }
+
                                 //notify about newly added comment
                                 CommentsItem postedComment = commentResponse.getComments().get(0);
                                 commentsItems.add(0, postedComment);
                                 commentAdapter.notifyItemInserted(0);
                                 recyclerView.smoothScrollToPosition(0);
 
+                                iOnCommentRepliesAdded.onCommentRepliesAdded(adapterPosition,
+                                        new CommentsItem(
+                                                commentResponse.getComments().get(0).getProfileUrl(),
+                                                commentResponse.getComments().get(0).getCommentDate(),
+                                                commentResponse.getComments().get(0).getName(),
+                                                commentResponse.getComments().get(0).getComment()
+                                        ));
                                 ioCommentAdded.onCommandAdded(postAdapterPosition);
                             }
                         }
@@ -154,8 +169,9 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
         });
     }
 
-    private void getPostComments() {
-        viewModel.getPostComments(postId, postuserId).observe(this, new Observer<CommentResponse>() {
+    private void getCommentReplies() {
+
+        viewModel.getCommentReplies(postId, parentId).observe(this, new Observer<CommentResponse>() {
             @Override
             public void onChanged(CommentResponse commentResponse) {
                 if (commentResponse.getStatus() == 200) {
@@ -170,26 +186,5 @@ public class PostCommentRepliesBottomSheet extends BottomSheetDialogFragment imp
             }
         });
 
-    }
-
-    @Override
-    public void onCommentRepliesAdded(int adapterPosition, CommentsItem item) {
-        commentCounter++;
-        if (commentCounter == 1) {
-            commentsCounterTxt.setText(commentCounter + " comment");
-        } else {
-            commentsCounterTxt.setText(commentCounter + " comments");
-        }
-
-        commentsItems.get(adapterPosition)
-                .setTotalCommentReplies(commentsItems.get(adapterPosition).getTotalCommentReplies() + 1);
-        if(commentsItems.get(adapterPosition).getComments().size()>=1){
-            commentsItems.get(adapterPosition).getComments().set(0, item);
-        }else{
-           List<CommentsItem> updatedComments = commentsItems.get(adapterPosition).getComments();
-           updatedComments.add(0, item);
-           commentsItems.get(adapterPosition).setComments(updatedComments);
-        }
-        commentAdapter.notifyItemChanged(adapterPosition, commentsItems.get(adapterPosition).getComments().get(0));
     }
 }

@@ -58,7 +58,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 public class ProfileActivity extends AppCompatActivity implements DialogInterface.OnDismissListener,
-        SwipeRefreshLayout.OnRefreshListener, PostAdapter.IUpdateUserReaction {
+        SwipeRefreshLayout.OnRefreshListener, PostAdapter.IUpdateUserReaction, Util.IOCommentAdded {
 
     /*
      current_state
@@ -193,7 +193,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogInterfac
                         }
                         Glide.with(ProfileActivity.this).load(profileUrl).into(profileImage);
 
-                    }else{
+                    } else {
                         profileUrl = R.drawable.default_profile_placeholder + "";
                     }
 
@@ -205,8 +205,8 @@ public class ProfileActivity extends AppCompatActivity implements DialogInterfac
                             Log.i("coverUrl", coverUrl);
                         }
                         Glide.with(ProfileActivity.this).load(coverUrl).into(coverImage);
-                    }else{
-                        coverUrl = R.drawable.cover_picture_placeholder+"";
+                    } else {
+                        coverUrl = R.drawable.cover_picture_placeholder + "";
                     }
 
                     if (current_state == 0) {
@@ -517,20 +517,26 @@ public class ProfileActivity extends AppCompatActivity implements DialogInterfac
 
         viewModel.performReaction(new Util.PerformReaction(
                 uid,
-                postId+"",
+                postId + "",
                 postOwnerId,
                 previousReactionType,
                 newReactionType
         )).observe(this, new Observer<ReactResponse>() {
             @Override
             public void onChanged(ReactResponse reactResponse) {
-                if(reactResponse.getStatus() == 200){
+                if (reactResponse.getStatus() == 200) {
                     postAdapter.updatePostAfterReaction(adpaterPosition, reactResponse.getReaction());
-                }else {
+                } else {
                     Toast.makeText(ProfileActivity.this, reactResponse.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    @Override
+    public void onCommandAdded(int adapterPosition) {
+
+        postAdapter.increasePostCommentCount(adapterPosition);
     }
 
     public static class PerformAction {

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -56,6 +57,7 @@ public class PostUploadActivity extends AppCompatActivity {
 
     private File compressedImageFile = null;
 
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,17 @@ public class PostUploadActivity extends AppCompatActivity {
         textInputEditText = findViewById(R.id.input_post);
         addImage = findViewById(R.id.addImage);
         previewImage = findViewById(R.id.imagePreview);
+
+        toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.icon_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         addImage.setOnClickListener(v ->
             selectImage()
