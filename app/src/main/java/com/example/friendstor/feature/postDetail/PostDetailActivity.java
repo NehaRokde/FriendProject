@@ -95,22 +95,6 @@ public class PostDetailActivity extends AppCompatActivity implements Util.IOComm
 
         if (getIntent().getBooleanExtra("shouldLoadFromApi", false)) {
 
-            progressDialog.show();
-            Map<String, String> params = new HashMap<>();
-            params.put("postId", getIntent().getStringExtra("postId"));
-            params.put("uid", FirebaseAuth.getInstance().getUid());
-
-            viewModel.postDetails(params).observe(this, new Observer<PostResponse>() {
-                @Override
-                public void onChanged(PostResponse postResponse) {
-                    progressDialog.hide();
-                    if(postResponse.getStatus() == 200){
-                        scrollview.setVisibility(View.VISIBLE);
-                        postsItem = postResponse.getPosts().get(0);
-                        showPost();
-                    }
-                }
-            });
 
         } else {
             scrollview.setVisibility(View.VISIBLE);
